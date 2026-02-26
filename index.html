@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Hari — Engineer. Creator. Strategist." />
+  <title>HARI — SYSTEM ONLINE</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ===================================================================
+   TOKENS - CYBERPUNK / HIGH CONTRAST
+=================================================================== */
+    :root {
+      --bg: #050505;
+      --panel: rgba(20, 20, 20, 0.6);
+      --glass: rgba(255, 255, 255, 0.03);
+
+      --crimson: #ff0f0f;
+      --crimson-glow: #ff0f0f80;
+
+      --cyan: #00f3ff;
+      --cyan-glow: #00f3ff50;
+
+      --gold: #ffd700;
+
+      --white: #e0e0e0;
+      --gray: #888888;
+
+      --f-head: 'Syncopate', sans-serif;
+      --f-body: 'Rajdhani', sans-serif;
+      --f-mono: 'JetBrains Mono', monospace;
+
+      --ease: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ===================================================================
+   RESET & BASE
+=================================================================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      cursor: none;
+    }
+
+    /* Hide default cursor */
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--f-body);
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: color 0.3s;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--crimson);
+    }
+
+    /* ===================================================================
+   CUSTOM CURSOR
+=================================================================== */
+    #cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--cyan);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out;
+      mix-blend-mode: difference;
+    }
+
+    #cursor::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      background: var(--crimson);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    body:hover #cursor {
+      opacity: 1;
+    }
+
+    /* Hover State for Cursor */
+    .hover-target:hover~#cursor,
+    a:hover~#cursor,
+    button:hover~#cursor {
+      transform: translate(-50%, -50%) scale(1.5);
+      border-color: var(--crimson);
+      background: rgba(255, 15, 15, 0.1);
+    }
+
+    /* ===================================================================
+   CANVAS
+=================================================================== */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+
+    /* ===================================================================
+   LOADER
+=================================================================== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loader.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-glitch {
+      font-family: var(--f-head);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--white);
+      position: relative;
+      animation: glitch-anim 2s infinite;
+    }
+
+    .loader-bar {
+      margin-top: 20px;
+      width: 200px;
+      height: 2px;
+      background: #222;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loader-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      background: var(--crimson);
+      transform: translateX(-100%);
+      animation: load-bar 4s ease forwards;
+    }
+
+    @keyframes load-bar {
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes glitch-anim {
+      0% {
+        text-shadow: 2px 0 var(--crimson), -2px 0 var(--cyan);
+      }
+
+      20% {
+        text-shadow: -2px 0 var(--crimson), 2px 0 var(--cyan);
+      }
+
+      40% {
+        text-shadow: 2px 0 var(--crimson), -2px 0 var(--cyan);
+      }
+
+      100% {
+        text-shadow: 2px 0 var(--crimson), -2px 0 var(--cyan);
+      }
+    }
+
+    /* ===================================================================
+   NAV
+=================================================================== */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 30px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(5px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), transparent);
+    }
+
+    .brand {
+      font-family: var(--f-head);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .brand span {
+      color: var(--crimson);
+    }
+
+    .menu {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .menu a {
+      font-family: var(--f-mono);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      position: relative;
+    }
+
+    .menu a::before {
+      content: '[';
+      margin-right: 5px;
+      opacity: 0;
+      color: var(--crimson);
+      transition: opacity 0.3s;
+    }
+
+    .menu a::after {
+      content: ']';
+      margin-left: 5px;
+      opacity: 0;
+      color: var(--crimson);
+      transition: opacity 0.3s;
+    }
+
+    .menu a:hover {
+      color: var(--white);
+    }
+
+    .menu a:hover::before,
+    .menu a:hover::after {
+      opacity: 1;
+    }
+
+    /* ===================================================================
+   HERO - ASYMMETRICAL 
+=================================================================== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-box {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      align-items: center;
+      gap: 50px;
+    }
+
+    .hero-text {
+      z-index: 2;
+    }
+
+    .hero-tag {
+      font-family: var(--f-mono);
+      color: var(--cyan);
+      letter-spacing: 0.25em;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .hero-title {
+      font-family: var(--f-head);
+      font-size: clamp(4rem, 8vw, 7rem);
+      line-height: 0.9;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .hero-title span {
+      -webkit-text-stroke: 2px var(--white);
+      color: transparent;
+      display: block;
+      opacity: 0.5;
+    }
+
+    .hero-title .solid {
+      color: var(--white);
+      opacity: 1;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-sub {
+      font-size: 1.5rem;
+      color: var(--gray);
+      max-width: 600px;
+      border-left: 3px solid var(--crimson);
+      padding-left: 20px;
+      margin-bottom: 40px;
+    }
+
+    /* ===================================================================
+       CYBER-ID CARD STYLES
+    =================================================================== */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      perspective: 1000px;
+    }
+
+    .profile-card {
+      position: relative;
+      width: 320px;
+      height: 450px;
+      background: rgba(10, 10, 10, 0.8);
+      border: 1px solid rgba(220, 20, 60, 0.3);
+      padding: 10px;
+      clip-path: polygon(20px 0, 100% 0,
+          100% calc(100% - 20px), calc(100% - 20px) 100%,
+          0 100%, 0 20px);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+      transition: transform 0.3s ease;
+    }
+
+    .profile-card:hover {
+      transform: scale(1.02) rotateY(5deg);
+      box-shadow: 0 0 50px rgba(220, 20, 60, 0.2);
+    }
+
+    /* Inner Image Container */
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      clip-path: inherit;
+    }
+
+    .card-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Default: Dark Red Duotone */
+      filter: grayscale(100%) contrast(1.4) brightness(0.9);
+      mix-blend-mode: luminosity;
+      transition: all 0.5s;
+    }
+
+    .profile-card:hover img {
+      filter: grayscale(0%) contrast(1.1) brightness(1.1);
+      mix-blend-mode: normal;
+    }
+
+    /* CRT Scanline */
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: rgba(0, 255, 255, 0.8);
+      box-shadow: 0 0 10px var(--cyan);
+      opacity: 0.6;
+      animation: scan 3s linear infinite;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0% {
+        top: -10%;
+      }
+
+      100% {
+        top: 110%;
+      }
+    }
+
+    /* Tech Borders */
+    .tech-border {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--crimson);
+      z-index: 10;
+      transition: 0.3s;
+    }
+
+    .tl {
+      top: -2px;
+      left: -2px;
+      border-right: 0;
+      border-bottom: 0;
+    }
+
+    .tr {
+      top: -2px;
+      right: -2px;
+      border-left: 0;
+      border-bottom: 0;
+    }
+
+    .bl {
+      bottom: -2px;
+      left: -2px;
+      border-right: 0;
+      border-top: 0;
+    }
+
+    .br {
+      bottom: -2px;
+      right: -2px;
+      border-left: 0;
+      border-top: 0;
+    }
+
+    .profile-card:hover .tech-border {
+      width: 100%;
+      height: 100%;
+      border-color: var(--cyan);
+      opacity: 0.5;
+    }
+
+    /* Labels */
+    .card-label {
+      position: absolute;
+      font-family: var(--f-mono);
+      font-size: 0.7rem;
+      color: var(--crimson);
+      background: #000;
+      padding: 2px 8px;
+      z-index: 10;
+      letter-spacing: 2px;
+    }
+
+    .top {
+      top: -15px;
+      right: 0;
+      border: 1px solid var(--crimson);
+    }
+
+    .bottom {
+      bottom: -15px;
+      left: 0;
+      border: 1px solid var(--crimson);
+    }
+
+    /* Overlay Gradient */
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* ===================================================================
+   GLASS CARDS (Tilt Effect)
+=================================================================== */
+    .card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 4px;
+      /* Brutalist corners */
+      transition: transform 0.1s, border-color 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--crimson);
+      box-shadow: 0 0 30px rgba(255, 15, 15, 0.1);
+    }
+
+    /* Cyber corner accents */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--crimson);
+      transition: 0.4s;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 2px;
+      background: var(--cyan);
+      transition: 0.4s;
+    }
+
+    .card:hover::before,
+    .card:hover::after {
+      width: 100%;
+    }
+
+    /* ===================================================================
+   SECTIONS & LAYOUT
+=================================================================== */
+    section {
+      padding: 150px 50px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-head {
+      margin-bottom: 80px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 20px;
+    }
+
+    .sec-title {
+      font-family: var(--f-head);
+      font-size: 3rem;
+      color: var(--white);
+      text-transform: uppercase;
+    }
+
+    .sec-num {
+      font-family: var(--f-mono);
+      font-size: 4rem;
+      color: rgba(255, 255, 255, 0.05);
+      font-weight: 700;
+      line-height: 0.8;
+    }
+
+    /* ABOUT GRID */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border-left: 2px solid var(--gray);
+    }
+
+    .stat-num {
+      font-family: var(--f-head);
+      font-size: 2.5rem;
+      color: var(--cyan);
+    }
+
+    /* SKILLS */
+    .skills-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .skill-card h3 {
+      font-family: var(--f-head);
+      margin-bottom: 15px;
+      color: var(--white);
+    }
+
+    .skill-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .skill-item {
+      font-family: var(--f-mono);
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px 10px;
+      border: 1px solid transparent;
+    }
+
+    .skill-item:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 243, 255, 0.1);
+    }
+
+    /* CREED - HORIZONTAL SCROLL */
+    .creed-wrapper {
+      display: flex;
+      overflow-x: auto;
+      gap: 30px;
+      padding-bottom: 40px;
+      /* Hide scrollbar */
+      scrollbar-width: thin;
+    }
+
+    .creed-card {
+      min-width: 300px;
+      background: #0a0a0a;
+      border: 1px solid #222;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Character Specific Accents */
+    .creed-card[data-char="ironman"] {
+      border-top: 3px solid var(--gold);
+    }
+
+    .creed-card[data-char="batman"] {
+      border-top: 3px solid #333;
+    }
+
+    .creed-card[data-char="wick"] {
+      border-top: 3px solid #fff;
+    }
+
+    .creed-card[data-char="vader"] {
+      border-top: 3px solid var(--crimson);
+    }
+
+    .quote {
+      font-style: italic;
+      color: #aaa;
+      margin-bottom: 20px;
+      font-family: var(--f-body);
+      font-size: 1.1rem;
+    }
+
+    .char-name {
+      font-family: var(--f-head);
+      font-size: 1.2rem;
+      color: var(--white);
+    }
+
+    /* CONTACT */
+    #contact {
+      text-align: center;
+      padding: 200px 20px;
+    }
+
+    .contact-btn {
+      display: inline-block;
+      font-family: var(--f-head);
+      font-size: 2rem;
+      border: 2px solid var(--crimson);
+      padding: 20px 60px;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+      margin-top: 40px;
+    }
+
+    .contact-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--crimson);
+      z-index: -1;
+      transform: translateX(-100%);
+      transition: transform 0.4s var(--ease);
+    }
+
+    .contact-btn:hover::before {
+      transform: translateX(0);
+    }
+
+    /* ===================================================================
+   RESPONSIVE NAV & LAYOUT
+=================================================================== */
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 30px;
+      height: 3px;
+      margin: 5px;
+      background: var(--white);
+      transition: 0.3s;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-box {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding-top: 80px;
+      }
+
+      .hero-visual {
+        margin-top: 40px;
+        transform: scale(0.8);
+      }
+
+      /* Hide on tablet/mobile for simplicity */
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sec-title {
+        font-size: 2rem;
+      }
+
+      /* Mobile Nav */
+      .hamburger {
+        display: block;
+      }
+
+      .menu {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 5, 5, 0.98);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--ease);
+        z-index: 1000;
+        padding: 0;
+      }
+
+      .menu.active {
+        transform: translateX(0);
+      }
+
+      .menu a {
+        font-size: 1.5rem;
+        margin: 15px 0;
+      }
+
+      /* Animate Hamburger */
+      .menu.active~.hamburger span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 6px);
+      }
+
+      .menu.active~.hamburger span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu.active~.hamburger span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -6px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      section {
+        padding: 80px 20px;
+      }
+
+      .hero-title {
+        font-size: 3.5rem;
+      }
+
+      .sec-title {
+        font-size: 2rem;
+      }
+
+      .sec-num {
+        font-size: 3rem;
+      }
+
+      .photo-frame {
+        width: 280px;
+        height: 280px;
+      }
+
+      /* Disable Tilt on Mobile for Performance */
+      .card,
+      .skill-card,
+      .creed-card {
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-glitch">SYSTEM BOOT</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- BG CANVAS -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="cursor"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="brand">HARI<span>.</span>DEV</div>
+    <ul class="menu" id="menu">
+      <li><a href="#about" onclick="toggleMenu()">About</a></li>
+      <li><a href="#experience" onclick="toggleMenu()">Experience</a></li>
+      <li><a href="#skills" onclick="toggleMenu()">Skills</a></li>
+      <li><a href="#certifications" onclick="toggleMenu()">Certs</a></li> <!-- Shortened for mobile -->
+      <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+    </ul>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-box">
+      <div class="hero-text">
+        <span class="hero-tag">// ERNAKULAM, INDIA</span>
+        <h1 class="hero-title">
+          <span>EMBEDDED</span>
+          <span class="solid">AUTOMOTIVE</span>
+          <span>DEVELOPER</span>
+        </h1>
+        <p class="hero-sub">
+          4+ Years Experience. Specialist in C++, Kanzi HMI, ASPICE, and ISO 26262.
+          Delivering high-performance software for next-gen vehicles.
+        </p>
+      </div>
+
+      <!-- CYBER-ID CARD -->
+      <div class="hero-visual">
+        <div class="profile-card">
+          <div class="card-inner">
+            <img src="profile.png" alt="Hari"
+              onerror="this.src='https://via.placeholder.com/400/111/fff?text=OPERATOR'">
+            <div class="scan-line"></div>
+            <div class="card-overlay"></div>
+          </div>
+
+          <!-- Tech UI Elements -->
+          <div class="tech-border tl"></div>
+          <div class="tech-border tr"></div>
+          <div class="tech-border bl"></div>
+          <div class="tech-border br"></div>
+
+          <div class="card-label top">ID: 8492-AX</div>
+          <div class="card-label bottom">STATUS: ACTIVE</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-head">
+      <h2 class="sec-title">Professional Profile</h2>
+      <span class="sec-num">01</span>
+    </div>
+
+    <div class="about-grid">
+      <div class="card" data-tilt>
+        <p style="font-size: 1.15rem; margin-bottom: 20px; color: var(--white);">
+          <strong>Automotive Embedded Software Developer</strong> with over 4 years of experience in requirement
+          analysis, software development, and optimization for automotive systems.
+        </p>
+        <p style="margin-bottom: 20px; color: var(--gray);">
+          Proficient in <strong>Embedded C, C++, and Kanzi Studio</strong> for HMI. Experienced with QNX target systems,
+          Vector tools (CANalyzer, CANoe), and adhering to quality standards including <strong>ASPICE and ISO
+            26262</strong>.
+        </p>
+        <p style="color: var(--crimson);">
+          Proven track record of managing integration processes, conducting target hardware testing, and delivering
+          high-quality automotive software solutions.
+        </p>
+      </div>
+
+      <div style="display: grid; gap: 20px;">
+        <div class="stat-box card">
+          <span class="stat-num">4+ YEARS</span>
+          <span>Automotive Experience</span>
+        </div>
+        <div class="stat-box card">
+          <span class="stat-num">B.Tech</span>
+          <span>Electrical & Electronics</span>
+        </div>
+        <div class="stat-box card">
+          <span class="stat-num">HMI</span>
+          <span>Kanzi Studio Specialist</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-head">
+      <h2 class="sec-title">Technical Arsenal</h2>
+      <span class="sec-num">02</span>
+    </div>
+
+    <div class="skills-container">
+      <div class="skill-card card" data-tilt>
+        <h3>Languages</h3>
+        <ul class="skill-list">
+          <li class="skill-item">Embedded C</li>
+          <li class="skill-item">Embedded C++</li>
+          <li class="skill-item">Python</li>
+        </ul>
+      </div>
+
+      <div class="skill-card card" data-tilt>
+        <h3>HMI & Protocols</h3>
+        <ul class="skill-list">
+          <li class="skill-item">Kanzi Studio</li>
+          <li class="skill-item">Figma</li>
+          <li class="skill-item">CAN</li>
+          <li class="skill-item">DET</li>
+          <li class="skill-item">QNX</li>
+        </ul>
+      </div>
+
+      <div class="skill-card card" data-tilt>
+        <h3>Tools & Standards</h3>
+        <ul class="skill-list">
+          <li class="skill-item">Vector CANoe</li>
+          <li class="skill-item">CANalyzer</li>
+          <li class="skill-item">Git / Gerrit / JIRA</li>
+          <li class="skill-item">Polarion</li>
+          <li class="skill-item">ASPICE</li>
+          <li class="skill-item">ISO 26262</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-head">
+      <h2 class="sec-title">Mission Logs</h2>
+      <span class="sec-num">03</span>
+    </div>
+
+    <div style="position: relative; border-left: 2px solid var(--crimson); margin-left: 20px; padding-left: 40px;">
+
+      <!-- ROLE 1 -->
+      <div style="margin-bottom: 60px; position: relative;">
+        <div
+          style="position: absolute; left: -49px; top: 0; width: 16px; height: 16px; background: var(--bg); border: 2px solid var(--crimson); border-radius: 50%;">
+        </div>
+        <span style="font-family: var(--f-mono); color: var(--crimson);">JAN 2025 — PRESENT</span>
+        <h3 style="font-family: var(--f-head); font-size: 1.8rem; margin: 10px 0;">Senior Software Engineer I</h3>
+        <h4 style="color: var(--gray); margin-bottom: 20px;">Thundersoft • Bangalore, India</h4>
+        <ul style="list-style: none; color: var(--white);">
+          <li style="margin-bottom: 10px;">► Developing and optimizing automotive HMI applications using Kanzi Studio
+            and C++.</li>
+          <li style="margin-bottom: 10px;">► Conducting rigorous software testing and validation on target hardware.
+          </li>
+          <li style="margin-bottom: 10px;">► Managing requirements and change requests using Polarion.</li>
+          <li style="margin-bottom: 10px;">► Performing code reviews via Gerrit to ensure best practices.</li>
+          <li>► Designing UI in Figma and translating to functional embedded software.</li>
+        </ul>
+      </div>
+
+      <!-- ROLE 2 -->
+      <div style="margin-bottom: 60px; position: relative;">
+        <div
+          style="position: absolute; left: -49px; top: 0; width: 16px; height: 16px; background: var(--bg); border: 2px solid var(--gray); border-radius: 50%;">
+        </div>
+        <span style="font-family: var(--f-mono); color: var(--gray);">JAN 2024 — AUG 2024</span>
+        <h3 style="font-family: var(--f-head); font-size: 1.8rem; margin: 10px 0;">Senior Software Engineer</h3>
+        <h4 style="color: var(--gray); margin-bottom: 20px;">Acsia Technologies • Trivandrum, India</h4>
+        <ul style="list-style: none; color: var(--white);">
+          <li style="margin-bottom: 10px;">► Led software quality enhancement initiatives by refining development
+            processes.</li>
+          <li style="margin-bottom: 10px;">► Analyzed system requirements (STSS/SRD) and translated to technical specs.
+          </li>
+          <li style="margin-bottom: 10px;">► Mentored junior engineers in C++ and troubleshooting.</li>
+          <li>► Executed validation tests and participated in technical client discussions.</li>
+        </ul>
+      </div>
+
+      <!-- ROLE 3 -->
+      <div style="margin-bottom: 20px; position: relative;">
+        <div
+          style="position: absolute; left: -49px; top: 0; width: 16px; height: 16px; background: var(--bg); border: 2px solid var(--gray); border-radius: 50%;">
+        </div>
+        <span style="font-family: var(--f-mono); color: var(--gray);">AUG 2021 — DEC 2023</span>
+        <h3 style="font-family: var(--f-head); font-size: 1.8rem; margin: 10px 0;">Software Engineer</h3>
+        <h4 style="color: var(--gray); margin-bottom: 20px;">Acsia Technologies • Trivandrum, India</h4>
+        <ul style="list-style: none; color: var(--white);">
+          <li style="margin-bottom: 10px;">► Developed embedded software for Instrument Clusters using C and C++.</li>
+          <li style="margin-bottom: 10px;">► Designed UI for Infotainment/IVI modules using Kanzi Studio.</li>
+          <li style="margin-bottom: 10px;">► Performed integration testing on QNX target hardware.</li>
+          <li>► Worked with ASPICE/ISO 26262 standards and Vector tools (CANalyzer/CANoe).</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EDUCATION & CERTIFICATIONS -->
+  <section id="certifications">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+
+      <!-- EDUCATION -->
+      <div>
+        <div class="section-head">
+          <h2 class="sec-title">Education</h2>
+          <span class="sec-num">04</span>
+        </div>
+        <div class="card" data-tilt style="border-left: 2px solid var(--cyan);">
+          <span style="font-family: var(--f-mono); color: var(--cyan); letter-spacing: 2px;">GRADUATED 2020</span>
+          <h3 style="font-family: var(--f-head); font-size: 1.5rem; margin: 10px 0;">B.Tech in Electrical & Electronics
+          </h3>
+          <p style="color: var(--gray);">APJ Abdul Kalam Technological University</p>
+          <p style="color: var(--gray);">Kerala, India</p>
+        </div>
+      </div>
+
+      <!-- CERTIFICATIONS -->
+      <div>
+        <div class="section-head">
+          <h2 class="sec-title">Certifications</h2>
+          <span class="sec-num">05</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+
+          <div class="card" data-tilt style="padding: 20px; border-left: 2px solid var(--white);">
+            <h4 style="font-family: var(--f-head); color: var(--white);">ISRO Project Completion</h4>
+            <p style="font-size: 0.9rem; color: var(--gray);">"Intelligent Power Switching Module for Satellite Launch
+              Vehicles"</p>
+          </div>
+
+          <div class="card" data-tilt style="padding: 20px; border-left: 2px solid var(--crimson);">
+            <h4 style="font-family: var(--f-head); color: var(--crimson);">Acsia "You've Earned It" Award</h4>
+            <p style="font-size: 0.9rem; color: var(--gray);">Recognition for excellence in 2022</p>
+          </div>
+
+          <div class="card" data-tilt style="padding: 20px;">
+            <h4 style="font-family: var(--f-head);">Automotive Specialized Training</h4>
+            <ul
+              style="list-style: none; margin-top: 10px; font-family: var(--f-mono); font-size: 0.85rem; color: var(--gray);">
+              <li>► ASPICE & ISO 26262 Standards</li>
+              <li>► Vector Tools (CANalyzer, CANoe)</li>
+              <li>► Embedded C/C++ Programming</li>
+            </ul>
+          </div>
+
+          <div class="card" data-tilt style="padding: 20px;">
+            <h4 style="font-family: var(--f-head);">NPTEL Elite Certification</h4>
+            <p style="font-size: 0.9rem; color: var(--gray);">Recent Advances in Transmission Insulators (81%)</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <h2 class="sec-title" style="font-size: 4rem; margin-bottom: 20px;">Ready to Build?</h2>
+    <p style="color: var(--gray); margin-bottom: 40px;">Open for opportunities in Embedded Systems & AI.</p>
+
+    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+      <a href="mailto:harisrees1008@gmail.com" class="contact-btn">Launch Email</a>
+      <a href="https://linkedin.com/in/harisree-s" target="_blank" class="contact-btn"
+        style="border-color: var(--cyan);">LinkedIn</a>
+      <a href="tel:+917510132875" class="contact-btn" style="border-color: var(--gold);">+91 75101 32875</a>
+    </div>
+  </section>
+
+  <!-- SCRIPTS -->
+  <script>
+    /* =========================================
+       1. LOADER FAILSAFE
+       ========================================= */
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('loader').classList.add('hide'), 800);
+    });
+    // Fallback if load hangs
+    setTimeout(() => document.getElementById('loader').classList.add('hide'), 1500);
+
+    /* =========================================
+       2. CUSTOM CURSOR
+       ========================================= */
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    /* =========================================
+       3. 3D TILT EFFECT (Vanilla JS Micro-Lib)
+       ========================================= */
+    document.querySelectorAll('[data-tilt]').forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const xPct = x / rect.width;
+        const yPct = y / rect.height;
+
+        const xRot = (0.5 - yPct) * 10; // Max rotation deg
+        const yRot = (xPct - 0.5) * 10;
+
+        el.style.transform = `perspective(1000px) rotateX(${xRot}deg) rotateY(${yRot}deg) scale(1.02)`;
+      });
+
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+      });
+    });
+
+    /* =========================================
+       4. CYBER-NET CANVAS BACKGROUND
+       ========================================= */
+    const cvs = document.getElementById('bg-canvas');
+    const ctx = cvs.getContext('2d');
+
+    let w, h;
+    let particles = [];
+    const mouse = { x: null, y: null };
+
+    function resize() {
+      w = cvs.width = window.innerWidth;
+      h = cvs.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    class P {
+      constructor() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.size = Math.random() * 2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > w) this.vx *= -1;
+        if (this.y < 0 || this.y > h) this.vy *= -1;
+
+        // Mouse interaction
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          this.x -= dx * 0.02;
+          this.y -= dy * 0.02;
+        }
+      }
+      draw() {
+        ctx.fillStyle = '#333';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Init
+    for (let i = 0; i < 80; i++) particles.push(new P());
+
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw Connections
+      for (let i = 0; i < particles.length; i++) {
+        let pA = particles[i];
+        pA.update();
+        pA.draw();
+
+        for (let j = i; j < particles.length; j++) {
+          let pB = particles[j];
+          let dx = pA.x - pB.x;
+          let dy = pA.y - pB.y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 120) {
+            ctx.strokeStyle = `rgba(0, 243, 255, ${0.1 - dist / 1200})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(pA.x, pA.y);
+            ctx.lineTo(pB.x, pB.y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    // Start Animation Loop
+    animate();
+
+    /* =========================================
+       5. MOBILE MENU TOGGLE
+       ========================================= */
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      const hamburger = document.querySelector('.hamburger');
+      menu.classList.toggle('active');
+    }
+
+  </script>
+</body>
+
+</html>
