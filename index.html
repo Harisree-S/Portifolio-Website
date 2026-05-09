@@ -358,12 +358,14 @@
     .reveal {
       opacity: 0;
       transform: translateY(40px);
-      transition: all 0.8s var(--ease);
+      filter: blur(15px);
+      transition: all 1s var(--ease);
     }
 
     .reveal.active {
       opacity: 1;
       transform: translateY(0);
+      filter: blur(0px);
     }
 
     .reveal-delay-1 {
@@ -438,9 +440,15 @@
       color: var(--white);
       display: block;
       text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-      background: linear-gradient(90deg, #fff, #aaa);
+      background: linear-gradient(90deg, #fff 0%, #aaa 50%, #fff 100%);
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: textShine 4s linear infinite;
+    }
+
+    @keyframes textShine {
+      to { background-position: 200% center; }
     }
 
     .hero-title .accent {
@@ -986,13 +994,29 @@
     .glitch-text::before {
       color: var(--cyan);
       z-index: -1;
-      transform: translate(-3px, 2px);
+      animation: glitch-anim-1 3s infinite linear alternate-reverse;
     }
 
     .glitch-text::after {
       color: var(--crimson);
       z-index: -2;
-      transform: translate(3px, -2px);
+      animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch-anim-1 {
+      0%, 100% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, 2px); }
+      20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, -2px); }
+      40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 2px); }
+      60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 2px); }
+      80% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, -2px); }
+    }
+
+    @keyframes glitch-anim-2 {
+      0%, 100% { clip-path: inset(10% 0 60% 0); transform: translate(3px, -2px); }
+      20% { clip-path: inset(30% 0 20% 0); transform: translate(-3px, 2px); }
+      40% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 2px); }
+      60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, -2px); }
+      80% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 2px); }
     }
 
     .contact-sub {
@@ -1111,6 +1135,122 @@
         opacity: 1;
         transform: scale(1);
       }
+    }
+
+    /* ===================================================================
+       AI COMPANION (DRONE EYE)
+    =================================================================== */
+    #ai-companion {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      width: 60px;
+      height: 60px;
+      z-index: 10000;
+      pointer-events: none;
+      animation: aiFloat 6s ease-in-out infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ai-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px dashed rgba(0, 240, 255, 0.4);
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+      transition: transform 0.1s linear;
+    }
+
+    .ai-ring-inner {
+      position: absolute;
+      width: 70%;
+      height: 70%;
+      border: 1px solid rgba(255, 0, 60, 0.5);
+      border-radius: 50%;
+      transition: transform 0.1s linear;
+    }
+
+    .ai-core {
+      position: relative;
+      width: 40%;
+      height: 40%;
+      background: var(--bg-light);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease, transform 0.1s ease-out;
+    }
+
+    .ai-pupil {
+      width: 8px;
+      height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+      transition: transform 0.1s ease-out;
+    }
+
+    @keyframes aiFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .ai-pulse .ai-core {
+      box-shadow: 0 0 30px var(--crimson), inset 0 0 10px var(--crimson);
+      border-color: var(--crimson);
+      transform: scale(1.2);
+    }
+    
+    .ai-pulse .ai-pupil {
+      background: var(--crimson);
+      box-shadow: 0 0 15px var(--crimson), 0 0 30px var(--crimson);
+    }
+
+    /* ===================================================================
+       PARTICLES & SHOCKWAVE
+    =================================================================== */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: floatUp linear forwards;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 0.8; transform: translateY(80vh) scale(1); }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(-20vh) scale(0); opacity: 0; }
+    }
+
+    .click-shockwave {
+      position: fixed;
+      border-radius: 50%;
+      border: 2px solid var(--cyan);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 1;
+      animation: shockwave 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes shockwave {
+      to { transform: translate(-50%, -50%) scale(3); opacity: 0; }
     }
 
     /* ===================================================================
@@ -1242,6 +1382,18 @@
         font-size: 2.5rem;
       }
 
+      #ai-companion {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+      }
+
+      .ai-pupil {
+        width: 6px;
+        height: 6px;
+      }
+
       .skills-grid {
         grid-template-columns: 1fr;
       }
@@ -1274,6 +1426,16 @@
   <div class="overlay-grid"></div>
   <div class="overlay-scanline"></div>
   <div class="overlay-vignette"></div>
+  <div id="particles"></div>
+
+  <!-- AI COMPANION -->
+  <div id="ai-companion">
+    <div class="ai-ring" id="ai-ring-1"></div>
+    <div class="ai-ring-inner" id="ai-ring-2"></div>
+    <div class="ai-core" id="ai-core">
+      <div class="ai-pupil" id="ai-pupil"></div>
+    </div>
+  </div>
 
   <!-- CUSTOM CURSOR -->
   <div id="cursor-dot"></div>
@@ -1744,6 +1906,106 @@
         card.style.setProperty('--mouse-x', `${x}px`);
         card.style.setProperty('--mouse-y', `${y}px`);
       });
+    });
+
+    /* =========================================
+       9. AI COMPANION LOGIC
+       ========================================= */
+    const aiCompanion = document.getElementById('ai-companion');
+    const aiPupil = document.getElementById('ai-pupil');
+    const aiRing1 = document.getElementById('ai-ring-1');
+    const aiRing2 = document.getElementById('ai-ring-2');
+    
+    let scrollRotation1 = 0;
+    let scrollRotation2 = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      if(!aiCompanion) return;
+      const rect = aiCompanion.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const deltaX = e.clientX - centerX;
+      const deltaY = e.clientY - centerY;
+      
+      const distance = Math.min(Math.sqrt(deltaX * deltaX + deltaY * deltaY), 50);
+      const angle = Math.atan2(deltaY, deltaX);
+      
+      const maxMove = 8;
+      const moveX = Math.cos(angle) * (distance / 50) * maxMove;
+      const moveY = Math.sin(angle) * (distance / 50) * maxMove;
+      
+      aiPupil.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    });
+
+    window.addEventListener('scroll', () => {
+      scrollRotation1 += 5;
+      scrollRotation2 -= 8;
+      if(aiRing1) aiRing1.style.transform = `rotate(${scrollRotation1}deg)`;
+      if(aiRing2) aiRing2.style.transform = `rotate(${scrollRotation2}deg)`;
+    });
+
+    window.addEventListener('click', () => {
+      if(aiCompanion) {
+        aiCompanion.classList.add('ai-pulse');
+        setTimeout(() => {
+          aiCompanion.classList.remove('ai-pulse');
+        }, 300);
+      }
+    });
+
+    /* =========================================
+       10. PARTICLES & MAGNETIC BUTTONS
+       ========================================= */
+    const particlesContainer = document.getElementById('particles');
+    if(particlesContainer) {
+      setInterval(() => {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 4 + 1;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.background = Math.random() > 0.5 ? 'var(--cyan)' : 'var(--crimson)';
+        p.style.boxShadow = `0 0 ${size*2}px ${p.style.background}`;
+        p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        particlesContainer.appendChild(p);
+        
+        setTimeout(() => {
+          if (p.parentNode) p.remove();
+        }, 20000);
+      }, 300);
+    }
+
+    const magneticElements = document.querySelectorAll('.btn, .nav-link, .brand');
+    magneticElements.forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        if (!window.matchMedia("(pointer: fine)").matches) return;
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        el.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        if(cursorDot) {
+          cursorDot.style.transform = `translate(calc(-50% + ${x*0.1}px), calc(-50% + ${y*0.1}px))`;
+        }
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'translate(0px, 0px)';
+      });
+    });
+
+    window.addEventListener('click', (e) => {
+      if (!window.matchMedia("(pointer: fine)").matches) return;
+      const wave = document.createElement('div');
+      wave.className = 'click-shockwave';
+      wave.style.left = e.clientX + 'px';
+      wave.style.top = e.clientY + 'px';
+      wave.style.width = '40px';
+      wave.style.height = '40px';
+      document.body.appendChild(wave);
+      setTimeout(() => {
+        if (wave.parentNode) wave.remove();
+      }, 600);
     });
 
   </script>
