@@ -146,7 +146,7 @@
       left: 0;
       transform: translate(-50%, -50%);
       pointer-events: none;
-      z-index: 9999;
+      z-index: 99999;
       border-radius: 50%;
     }
 
@@ -248,6 +248,76 @@
       color: var(--white);
       font-weight: 700;
       letter-spacing: 2px;
+    }
+
+    /* ===================================================================
+       INIT SCREEN
+    =================================================================== */
+    #init-screen {
+      position: fixed; inset: 0; background: #030303; z-index: 20000;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      transition: opacity 0.5s ease;
+    }
+    
+    #init-screen.hide {
+      opacity: 0; pointer-events: none;
+    }
+    
+    .init-btn {
+      font-family: var(--f-mono); font-size: 1.2rem; color: var(--cyan);
+      background: transparent; border: 1px solid var(--cyan);
+      padding: 20px 40px; cursor: pointer; text-transform: uppercase;
+      letter-spacing: 4px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+      transition: all 0.3s;
+    }
+    
+    .init-btn:hover {
+      background: rgba(0, 240, 255, 0.1); box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+      color: var(--white);
+    }
+
+    /* ===================================================================
+       ABSOLUTE CINEMA (Film Grain, Letterbox, Lens Flare)
+    =================================================================== */
+    .film-grain {
+      position: fixed; inset: -200%; pointer-events: none; z-index: 9998;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.12;
+      animation: grainShake 0.5s steps(1) infinite;
+    }
+    
+    @keyframes grainShake {
+      0%, 100% { transform: translate(0, 0); }
+      10% { transform: translate(-5%, -10%); }
+      30% { transform: translate(5%, 10%); }
+      50% { transform: translate(-10%, 5%); }
+      70% { transform: translate(10%, -5%); }
+      90% { transform: translate(5%, 5%); }
+    }
+
+    .letterbox {
+      position: fixed; left: 0; width: 100%; height: 50vh; background: #000; z-index: 15000;
+      transition: height 3s cubic-bezier(0.76, 0, 0.24, 1);
+      pointer-events: none;
+    }
+    
+    .letterbox-top { top: 0; }
+    .letterbox-bottom { bottom: 0; }
+    .letterbox.open { height: 0vh; }
+
+    .lens-flare {
+      position: fixed; top: 30%; left: -50%; width: 200%; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,240,255,0.8), transparent);
+      box-shadow: 0 0 20px 5px rgba(0,240,255,0.4), 0 0 50px 10px rgba(0,240,255,0.2);
+      transform: rotate(-10deg); pointer-events: none; z-index: 5;
+      opacity: 0; animation: anamorphicFlare 15s linear infinite 5s;
+    }
+    
+    @keyframes anamorphicFlare {
+      0% { left: -100%; opacity: 0; }
+      20% { opacity: 0.5; }
+      50% { left: 100%; opacity: 0; }
+      100% { left: 100%; opacity: 0; }
     }
 
     /* ===================================================================
@@ -427,6 +497,21 @@
       font-weight: 700;
       text-transform: uppercase;
       margin-bottom: 30px;
+    }
+    
+    /* Dramatic Title Reveal Glitch */
+    .hero-title.reveal {
+      transform: scale(1.2);
+      filter: blur(20px) contrast(200%) hue-rotate(90deg);
+    }
+    .hero-title.reveal.active {
+      transform: scale(1);
+      filter: blur(0px) contrast(100%) hue-rotate(0deg);
+      animation: cinematicSlam 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes cinematicSlam {
+      0% { letter-spacing: 0.5em; text-shadow: 20px 0 red, -20px 0 cyan; }
+      100% { letter-spacing: normal; text-shadow: 0 0 30px rgba(255, 255, 255, 0.2); }
     }
 
     .hero-title .outline {
@@ -793,25 +878,15 @@
       padding-left: 40px;
     }
 
-    /* The animated line */
+    /* The elegant static line */
     .timeline-line {
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
       width: 2px;
-      background: var(--dark-gray);
-    }
-
-    .timeline-line-progress {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      background: var(--crimson);
-      height: 0%;
-      /* Animated via JS */
-      box-shadow: 0 0 10px var(--crimson);
+      background: linear-gradient(to bottom, var(--cyan), var(--crimson), var(--dark-gray));
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
     }
 
     .timeline-item {
@@ -1422,11 +1497,19 @@
 
 <body>
 
+  <!-- BACKGROUND MUSIC (BGM) -->
+  <audio id="bgm" src="bgm.mp3" loop></audio>
+
   <!-- OVERLAYS -->
   <div class="overlay-grid"></div>
   <div class="overlay-scanline"></div>
   <div class="overlay-vignette"></div>
   <div id="particles"></div>
+  
+  <div class="film-grain"></div>
+  <div class="letterbox letterbox-top" id="lb-top"></div>
+  <div class="letterbox letterbox-bottom" id="lb-bottom"></div>
+  <div class="lens-flare"></div>
 
   <!-- AI COMPANION -->
   <div id="ai-companion">
@@ -1440,6 +1523,11 @@
   <!-- CUSTOM CURSOR -->
   <div id="cursor-dot"></div>
   <div id="cursor-outline"></div>
+
+  <!-- INIT SCREEN -->
+  <div id="init-screen">
+    <button class="init-btn hover-target" id="init-btn">Initialize System</button>
+  </div>
 
   <!-- LOADER -->
   <div id="loader">
@@ -1550,7 +1638,6 @@
 
     <div class="timeline" id="timeline">
       <div class="timeline-line"></div>
-      <div class="timeline-line-progress" id="timeline-progress"></div>
 
       <!-- ROLE 1 -->
       <div class="timeline-item reveal active">
@@ -1683,6 +1770,125 @@
   <!-- SCRIPTS -->
   <script>
     /* =========================================
+       0. AUDIO ENGINE
+       ========================================= */
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if(!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+      },
+      playTone(freq, type, duration, vol=0.1) {
+        if(!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+      },
+      playSweep(startFreq, endFreq, duration) {
+        if(!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, this.ctx.currentTime + duration);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+      },
+      playNoise(duration) {
+        if(!this.ctx) return;
+        const bufferSize = this.ctx.sampleRate * duration;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let i=0; i<bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        noise.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start();
+      },
+      playPortal() {
+        if(!this.ctx) return;
+        const duration = 4;
+        
+        // Ethereal Sine sweep
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 1.5);
+        osc.frequency.linearRampToValueAtTime(850, this.ctx.currentTime + duration);
+        
+        gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.5, this.ctx.currentTime + 1);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+
+        // Sweeping noise (wind/whoosh)
+        const bufferSize = this.ctx.sampleRate * duration;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let i=0; i<bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.value = 5; // Resonant whoosh
+        filter.frequency.setValueAtTime(200, this.ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(2000, this.ctx.currentTime + 1.5);
+        filter.frequency.linearRampToValueAtTime(3000, this.ctx.currentTime + duration);
+        
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+        noiseGain.gain.linearRampToValueAtTime(0.8, this.ctx.currentTime + 1);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+        noise.start();
+      },
+      playDrone() {
+        if(!this.ctx) return;
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+        osc1.frequency.value = 55; // Low A
+        osc2.frequency.value = 56; // Beating effect
+        gain.gain.value = 0.03; // Very quiet background drone
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc1.start();
+        osc2.start();
+      }
+    };
+
+    /* =========================================
        1. CINEMATIC LOADER
        ========================================= */
     document.addEventListener('DOMContentLoaded', () => {
@@ -1723,12 +1929,35 @@
           setTimeout(() => {
             loader.classList.add('hide');
             initTypewriter();
+            document.getElementById('lb-top').classList.add('open');
+            document.getElementById('lb-bottom').classList.add('open');
           }, 500);
         }
       }
 
-      // Start loader
-      setTimeout(updateProgress, 300);
+      // Bind to Init Screen
+      const initScreen = document.getElementById('init-screen');
+      const initBtn = document.getElementById('init-btn');
+
+      initBtn.addEventListener('click', () => {
+        window.scrollTo(0, 0);
+        AudioEngine.init();
+        AudioEngine.playPortal();
+        AudioEngine.playDrone();
+        
+        // Try playing background music if available
+        const bgm = document.getElementById('bgm');
+        if (bgm) {
+          bgm.volume = 0.4;
+          bgm.play().catch(e => console.log('BGM file not found or blocked.'));
+        }
+
+        initScreen.classList.add('hide');
+        setTimeout(() => {
+          initScreen.remove();
+          updateProgress();
+        }, 500);
+      });
     });
 
     /* =========================================
@@ -1854,25 +2083,6 @@
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
     /* =========================================
-       6. TIMELINE SCROLL PROGRESS
-       ========================================= */
-    const timeline = document.getElementById('timeline');
-    const timelineProgress = document.getElementById('timeline-progress');
-
-    window.addEventListener('scroll', () => {
-      if (!timeline) return;
-      const rect = timeline.getBoundingClientRect();
-      const winH = window.innerHeight;
-
-      // Calculate how much of the timeline is scrolled past the middle of the screen
-      if (rect.top < winH / 2 && rect.bottom > 0) {
-        let pct = ((winH / 2 - rect.top) / rect.height) * 100;
-        pct = Math.max(0, Math.min(100, pct));
-        timelineProgress.style.height = pct + '%';
-      }
-    });
-
-    /* =========================================
        7. ACTIVE NAV LINK HIGHLIGHTING
        ========================================= */
     const sections = document.querySelectorAll('section');
@@ -1977,8 +2187,11 @@
       }, 300);
     }
 
-    const magneticElements = document.querySelectorAll('.btn, .nav-link, .brand');
+    const magneticElements = document.querySelectorAll('.btn, .nav-link, .brand, .hover-target');
     magneticElements.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        AudioEngine.playTone(800, 'sine', 0.1, 0.05);
+      });
       el.addEventListener('mousemove', (e) => {
         if (!window.matchMedia("(pointer: fine)").matches) return;
         const rect = el.getBoundingClientRect();
@@ -1995,6 +2208,10 @@
     });
 
     window.addEventListener('click', (e) => {
+      if(e.target.id !== 'init-btn') {
+        AudioEngine.playTone(300, 'square', 0.15, 0.05);
+      }
+      
       if (!window.matchMedia("(pointer: fine)").matches) return;
       const wave = document.createElement('div');
       wave.className = 'click-shockwave';
