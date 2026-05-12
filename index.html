@@ -1119,6 +1119,53 @@
     }
 
     /* ===================================================================
+       PROJECTS
+    =================================================================== */
+    .project-card {
+      padding: 0;
+      border-radius: 8px;
+    }
+
+    .project-content {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      min-height: 350px;
+    }
+
+    .project-image {
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid var(--glass-border);
+      border-radius: 8px 0 0 8px;
+    }
+
+    .project-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(80%) brightness(0.8);
+      transition: filter 0.4s var(--ease), transform 0.4s var(--ease);
+    }
+
+    .project-card:hover .project-image img {
+      filter: grayscale(0%) brightness(1);
+    }
+
+    .project-info {
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .project-title {
+      font-family: var(--f-display);
+      font-size: 1.5rem;
+      color: var(--white);
+      margin-bottom: 5px;
+    }
+
+    /* ===================================================================
        CONTACT & FOOTER
     =================================================================== */
     #contact {
@@ -1650,6 +1697,19 @@
       .btn {
         width: 100%;
       }
+
+      .project-content {
+        grid-template-columns: 1fr;
+      }
+      .project-image {
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+        border-radius: 8px 8px 0 0;
+        min-height: 250px;
+      }
+      .project-info {
+        padding: 30px 20px;
+      }
     }
 
     /* ===================================================================
@@ -1805,6 +1865,7 @@
       <li><a href="#about" class="hover-target nav-link">About</a></li>
       <li><a href="#experience" class="hover-target nav-link">Experience</a></li>
       <li><a href="#skills" class="hover-target nav-link">Skills</a></li>
+      <li><a href="#projects" class="hover-target nav-link">Projects</a></li>
       <li><a href="#contact" class="hover-target nav-link">Contact</a></li>
     </ul>
     <div class="hamburger hover-target" id="hamburger">
@@ -1992,6 +2053,42 @@
           <span class="skill-tag">ISO 26262</span>
           <span class="skill-tag">Jira</span>
           <span class="skill-tag">Agile Methodology</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-head reveal">
+      <h2 class="sec-title">Classified Archives</h2>
+      <span class="sec-num">04</span>
+    </div>
+
+    <div class="projects-grid">
+      <div class="glass-card reveal hover-target project-card">
+        <div class="spotlight"></div>
+        <div class="project-content">
+          <div class="project-image">
+            <img src="isro_project.jpg" alt="ISRO Project Report" onerror="this.src='https://via.placeholder.com/600x400/111/0ff?text=ISRO+REPORT+MISSING'">
+            <div class="laser-scanline"></div>
+            <div class="card-glare"></div>
+          </div>
+          <div class="project-info">
+            <span class="timeline-date" style="margin-bottom: 15px;">JAN 2020 — FEB 2020</span>
+            <h3 class="project-title">Intelligent Power Switching Module</h3>
+            <p class="timeline-company" style="font-size: 1rem;">Vikram Sarabhai Space Centre (ISRO) • Integration Checkout Facilities</p>
+            <ul class="timeline-list">
+              <li>Developed an advanced power switching module for Satellite launch Vehicles.</li>
+              <li>Conducted simulations using Proteus software.</li>
+              <li>Designed the HMI interface with LabVIEW.</li>
+            </ul>
+            <div class="skills-list" style="margin-top: 20px;">
+              <span class="skill-tag">Proteus</span>
+              <span class="skill-tag">LabVIEW</span>
+              <span class="skill-tag">HMI Design</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
