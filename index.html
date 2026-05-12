@@ -911,13 +911,14 @@
     }
 
     .about-text p {
-      margin-bottom: 20px;
-      font-size: 1.1rem;
-      color: var(--gray);
+      margin-bottom: 25px;
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #e0e0e0; /* Brighter than gray for better readability */
     }
 
     .about-text p strong {
-      color: var(--white);
+      color: var(--cyan);
     }
 
     .stats-container {
@@ -1555,7 +1556,13 @@
 
       .about-grid {
         grid-template-columns: 1fr;
-        text-align: center;
+        text-align: left; /* Left align for better readability on mobile instead of center */
+      }
+
+      .about-text p {
+        font-size: 1.15rem; /* Larger text on mobile for readability */
+        line-height: 1.7;
+        margin-bottom: 20px;
       }
 
       .stats-container {
@@ -1793,7 +1800,7 @@
 
   <!-- NAV -->
   <nav id="navbar">
-    <a href="#hero" class="brand hover-target">HARI<span>.</span>DEV</a>
+    <a href="/" class="brand hover-target">HARI<span>.</span>DEV</a>
     <ul class="menu" id="menu">
       <li><a href="#about" class="hover-target nav-link">About</a></li>
       <li><a href="#experience" class="hover-target nav-link">Experience</a></li>
@@ -2014,17 +2021,17 @@
   <!-- FOOTER -->
   <footer>
     <div class="cyber-grid"></div>
-    <div>
+    <div style="color: var(--white); font-weight: 600;">
       <span class="status-dot"></span>
       SYSTEM STATUS: OPTIMAL
     </div>
     <div style="text-align: center;">
       &copy; 2026 HARI.DEV<br>
-      <span style="color: var(--dark-gray); font-size: 0.7rem;">BUILT WITH PRECISION</span>
+      <span style="color: var(--gray); font-size: 0.7rem;">BUILT WITH PRECISION</span>
     </div>
     <div class="social-links">
-      <a href="#" class="hover-target">GH</a>
-      <a href="https://linkedin.com/in/harisree-s" class="hover-target">LI</a>
+      <a href="https://github.com/Harisree-S" target="_blank" class="hover-target">GH</a>
+      <a href="https://linkedin.com/in/harisree-s" target="_blank" class="hover-target">LI</a>
       <a href="mailto:harisrees1008@gmail.com" class="hover-target">MAIL</a>
     </div>
   </footer>
